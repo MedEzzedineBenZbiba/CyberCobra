@@ -58,3 +58,16 @@ class LoginAPI(APIView):
         }, status=status.HTTP_401_UNAUTHORIZED)
 
 
+class LogoutAPI(APIView):
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"error": "Refresh token required"}, status=400)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Nécessite rest_framework_simplejwt.token_blacklist
+            return Response({"success": True, "message": "Déconnecté avec succès"})
+        except Exception:
+            return Response({"error": "Token invalide ou déjà blacklisted"}, status=400)
+        
