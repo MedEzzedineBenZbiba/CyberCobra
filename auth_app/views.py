@@ -34,3 +34,27 @@ class RegisterAPI(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class LoginAPI(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = authenticate(username=username, password=password)
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "success": True,
+                "message": f"Bienvenue {user.username} !",
+                "user": UserSerializer(user).data,  # maintenant is_superuser est inclus
+                "refresh": str(refresh),
+                "access": str(refresh.access_token)
+            })
+        return Response({
+            "success": False,
+            "message": "Nom d'utilisateur ou mot de passe invalide."
+        }, status=status.HTTP_401_UNAUTHORIZED)
+
+
