@@ -71,3 +71,10 @@ class LogoutAPI(APIView):
         except Exception:
             return Response({"error": "Token invalide ou déjà blacklisted"}, status=400)
         
+class UserListAPI(APIView):
+    permission_classes = [IsAdminUser]  # seulement les superusers
+
+    def get(self, request):
+        users = User.objects.all().order_by("-id")
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
