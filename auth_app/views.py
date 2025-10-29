@@ -78,3 +78,64 @@ class UserListAPI(APIView):
         users = User.objects.all().order_by("-id")
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
+
+class UserDetailAPI(APIView):
+    permission_classes = [IsAdminUser]  # seulement superusers
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return None
+
+    # Récupérer un utilisateur
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    # Éditer un utilisateur
+    def put(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            if 'password' in request.data and request.data['password']:
+                user.set_password(request.data['password'])
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Supprimer un utilisateur
+    def delete(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserProfileAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Récupérer le profil de l'utilisateur connecté
+        """
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        """
+        Mettre à jour le profil de l'utilisateur connecté
+        """
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "user": serializer.data})
+        return Response({"success": False, "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
