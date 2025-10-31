@@ -6,6 +6,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-lxtu1qs!=n4y68ro%ljwkqijy=e&r^-_b*l%+qd)g9ah^#@a)!'
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# API Keys
+GEMINI_API_KEY = 'AIzaSyCLSb6C9qx62C-K32X22Q1EWFqFBoHPCDM'
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,9 +22,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'auth_app',
-    'report'
+    'report',
     'gestion_dequipement',
     'gestion_camera',
+    'zones_app'
 ]
 
 AUTH_USER_MODEL = 'auth_app.User'
@@ -61,7 +65,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cybercobra',
         'USER': 'root',
-        'PASSWORD': '',  # no password
+        'PASSWORD': '123', 
         'HOST': 'localhost',
         'PORT': '3306',
     }
