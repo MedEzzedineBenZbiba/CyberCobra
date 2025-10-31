@@ -4,8 +4,13 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-lxtu1qs!=n4y68ro%ljwkqijy=e&r^-_b*l%+qd)g9ah^#@a)!'
+
+# API Keys
+GEMINI_API_KEY = 'AIzaSyCLSb6C9qx62C-K32X22Q1EWFqFBoHPCDM'
+
 DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+AUTH_USER_MODEL = 'auth_app.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -19,6 +24,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'auth_app',
+    'zones_app'
 ]
 
 AUTH_USER_MODEL = 'auth_app.User'
@@ -58,7 +64,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cybercobra',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -105,6 +111,6 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # ou ton port React
+    "http://localhost:5173",  
 ]
 CORS_ALLOW_CREDENTIALS = True
