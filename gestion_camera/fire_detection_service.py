@@ -3,6 +3,7 @@ Fire Detection Service using YOLOv8 AI Model
 This service provides real-time fire and smoke detection capabilities
 """
 
+
 import cv2
 import numpy as np
 from PIL import Image
