@@ -60,17 +60,58 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CyberCobra.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cybercobra',
-        'USER': 'root',
-        'PASSWORD': '',  # no password
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
+import os
+from urllib.parse import urlparse
 
+# Railway MySQL Database Configuration
+if os.environ.get('DATABASE_URL'):
+    db_info = urlparse(os.environ.get('DATABASE_URL'))
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': db_info.path[1:],  # Removes the leading '/'
+            'USER': db_info.username,
+            'PASSWORD': db_info.password,
+            'HOST': db_info.hostname,
+            'PORT': db_info.port,
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'ssl': {
+                    'ca': os.path.join(BASE_DIR, 'railway-ca.pem')
+                } if not DEBUG else {}
+            }
+        }
+    }
+elif os.environ.get('MYSQLHOST'):  # Alternative Railway MySQL variables
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('MYSQLDATABASE', 'cybercobra'),
+            'USER': os.environ.get('MYSQLUSER', 'root'),
+            'PASSWORD': os.environ.get('MYSQLPASSWORD', ''),
+            'HOST': os.environ.get('MYSQLHOST', 'localhost'),
+            'PORT': os.environ.get('MYSQLPORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            }
+        }
+    }
+
+# Railway-specific settings
+if os.environ.get('RAILWAY_STATIC_URL'):
+    STATIC_URL = os.environ.get('RAILWAY_STATIC_URL')
+    
+if os.environ.get('RAILWAY_ENVIRONMENT'):
+    DEBUG = False
+    ALLOWED_HOSTS = ['.railway.app', 'localhost', '127.0.0.1']
+    # Security settings for production
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},

@@ -63,7 +63,7 @@ def summarize_report(request):
         """
     try:
         # New way:
-        genai.configure(api_key="AIzaSyBuzdqLkRf0ZRjJWE5G9590eDzrSttM5co")
+        genai.configure(api_key="api_key")
         model = genai.GenerativeModel(model_name)
         # Step 1: Generate SPARQL query from AI
         response = model.generate_content(context)

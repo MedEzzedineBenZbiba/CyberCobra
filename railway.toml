@@ -1,0 +1,17 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage.py migrate && gunicorn CyberCobra.wsgi:application --bind 0.0.0.0:$PORT --workers 3"
+
+[services]
+[[services]]
+name = "web"
+[[services.ports]]
+port = 8000
+
+[environments]
+  [environments.production]
+    [environments.production.env]
+    DEBUG = "false"
+    ALLOWED_HOSTS = ".railway.app,localhost,127.0.0.1"
